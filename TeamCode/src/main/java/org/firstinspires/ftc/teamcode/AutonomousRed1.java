@@ -27,9 +27,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  *This is the left sided balancing stone from the drivers square perspective on the blue side
  *
  */
-@Autonomous(name = "AutonomousBlue1", group = "Autonomous Code Blue Side")
+@Autonomous(name = "AutonomousRed1", group = "Autonomous Code Red Side")
 //@Disabled
-public class AutonomousBlue1 extends LinearOpMode {
+public class AutonomousRed1 extends LinearOpMode {
 
     DcMotor rightMotorOutside;
     DcMotor leftMotorOutside;
@@ -76,18 +76,18 @@ public class AutonomousBlue1 extends LinearOpMode {
         if(_placement.equals("UNKNOWN"))
             _placement="CENTER";
 
-        long _leftStrafeValue = 1833; // Defaulting a value incase the vuforia doesn't work
-        if (_placement.equals("RIGHT"))
+        long _rightStrafeValue = 1833; // Defaulting a value incase the vuforia doesn't work
+        if (_placement.equals("LEFT"))
         {
-            _leftStrafeValue = 846;
+            _rightStrafeValue = 846;
         }
         else if (_placement.equals("CENTER"))
         {
-            _leftStrafeValue = 1833;
+            _rightStrafeValue = 1833;
         }
-        else if (_placement.equals("LEFT"))
+        else if (_placement.equals("RIGHT"))
         {
-            _leftStrafeValue = 2632;
+            _rightStrafeValue = 2632;
         }
 
         //move sensor arm down
@@ -108,7 +108,7 @@ public class AutonomousBlue1 extends LinearOpMode {
         telemetry.addData("Blue ", jewelColorSensor.blue());
         telemetry.addData("Hue", hsvValues[0]);
 
-        if (jewelColorSensor.blue() > jewelColorSensor.red())
+        if (jewelColorSensor.red() > jewelColorSensor.blue())
         {
             StopDriving();
             sleep(1000);
@@ -126,7 +126,7 @@ public class AutonomousBlue1 extends LinearOpMode {
             colorServo.setPosition(0.0);
             sleep(3000);
         }
-        else if (jewelColorSensor.red() > jewelColorSensor.blue())
+        else if (jewelColorSensor.blue() > jewelColorSensor.red())
         {
             StopDriving();
             sleep(1000);
@@ -163,20 +163,31 @@ public class AutonomousBlue1 extends LinearOpMode {
         StopDriving();
         sleep(1);
 
+        //Go forward
         DriveForward(0.23);
         sleep(1175);
         StopDriving();
         sleep(100);
-        LeftTurn(0.25);
+        RightTurn(0.25);
         sleep(978);
+        //sleep(1075);
         StopDriving();
         sleep(100);
+        //Drive Forward
         DriveForward(0.25);
         sleep(963);
         StopDriving();
         sleep(100);
-        NewStrafe(0.0115);
-        sleep(_leftStrafeValue);
+        //Move to the right
+        NewStrafe(-0.0115);
+        sleep(_rightStrafeValue);
+        //14.13v
+        //For Left
+        //sleep(3000);
+        //For Center
+        //sleep(2100);
+        //For Right
+        //sleep(900);
         StopDriving();
         sleep(1);
         blockMotorArm.setPower(-0.5);
@@ -213,10 +224,10 @@ public class AutonomousBlue1 extends LinearOpMode {
     }
 
     private void NewStrafe(double power) {
-        leftMotorInside.setPower(0.25 + power);
-        leftMotorOutside.setPower(-0.25 + power);
-        rightMotorInside.setPower(-0.25 - power);
-        rightMotorOutside.setPower(0.25 - power);
+        leftMotorInside.setPower(-0.25 + power);
+        leftMotorOutside.setPower(0.25 + power);
+        rightMotorInside.setPower(0.25 - power);
+        rightMotorOutside.setPower(-0.25 - power);
     }
 
     public void LeftTurn(double power) {
@@ -226,6 +237,12 @@ public class AutonomousBlue1 extends LinearOpMode {
         rightMotorOutside.setPower(power);
     }
 
+    public void RightTurn(double power){
+        leftMotorInside.setPower(power);
+        leftMotorOutside.setPower(power);
+        rightMotorInside.setPower(-power);
+        rightMotorOutside.setPower(-power);
+    }
     public void StopDriving() {
         leftMotorInside.setPower(0);
         leftMotorOutside.setPower(0);
@@ -296,8 +313,6 @@ public class AutonomousBlue1 extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-//            sleep(500); //Waiting for Vuforia to read the relic
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                 /* Found an instance of the template. In the actual game, you will probably
@@ -311,8 +326,9 @@ public class AutonomousBlue1 extends LinearOpMode {
                 }
 
             } else {
-//                telemetry.addData("VuMark", "not visible");
+                telemetry.addData("VuMark", "not visible");
             }
+
             telemetry.addData("VuMark",_placement);
             telemetry.update();
 //Check for the condition where the _placement value has changed.

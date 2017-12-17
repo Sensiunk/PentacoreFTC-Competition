@@ -46,6 +46,7 @@ public class AutonomousBlue2 extends LinearOpMode {
     public void runOpMode() {
         float hsvValues[] = {0F,0F,0F};
         final float values[] = hsvValues;
+        double _battery100 = 0.97;
 
         int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
         final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
@@ -78,15 +79,18 @@ public class AutonomousBlue2 extends LinearOpMode {
         long _vuforiaDistane = 1500; // Defaulting a value incase the vuforia doesn't work
         if (_placement.equals("RIGHT"))
         {
-            _vuforiaDistane = 1850;
+            //_vuforiaDistane = 1850;
+            _vuforiaDistane = 1720;
+
         }
-        if (_placement.equals("CENTER"))
+        else if (_placement.equals("CENTER"))
         {
-            _vuforiaDistane = 1500;
+            _vuforiaDistane = 1395;
+
         }
-        if (_placement.equals("LEFT"))
+        else if (_placement.equals("LEFT"))
         {
-            _vuforiaDistane = 1150;
+            _vuforiaDistane = 1069;
         }
 
         //move sensor arm down
@@ -168,7 +172,8 @@ public class AutonomousBlue2 extends LinearOpMode {
         StopDriving();
         sleep(100);
         LeftTurn(0.20);
-        sleep(1150);
+        //sleep(1075);
+        sleep(999);
         StopDriving();
         sleep(100);
         DriveForward(0.25);
@@ -181,7 +186,7 @@ public class AutonomousBlue2 extends LinearOpMode {
         StopDriving();
         sleep(100);
         LeftTurn(0.25);
-        sleep(1075);
+        sleep(999);
         StopDriving();
         sleep(1);
         DriveBackward(0.25);
@@ -240,6 +245,11 @@ public class AutonomousBlue2 extends LinearOpMode {
         rightMotorInside.setPower(0);
         rightMotorOutside.setPower(0);
     }
+    private void BatteryLvl(double power){
+        //13.44V
+
+
+    }
 
     private void Arm(double power) {
         blockMotorArm.setPower(power);
@@ -249,7 +259,7 @@ public class AutonomousBlue2 extends LinearOpMode {
         blockMotorArm.setPower(0);
     }
     private String dovuforia() {
-        String _placement = "CENTER";
+        String _placement = "UNKNOWN";
         /*
          * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
          * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
@@ -304,6 +314,8 @@ public class AutonomousBlue2 extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+//            sleep(500); //Waiting for Vuforia to read the relic
             if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
 
                 /* Found an instance of the template. In the actual game, you will probably
@@ -319,10 +331,11 @@ public class AutonomousBlue2 extends LinearOpMode {
             } else {
 //                telemetry.addData("VuMark", "not visible");
             }
-
             telemetry.addData("VuMark",_placement);
             telemetry.update();
-            if(_counter ==  12000)
+//Check for the condition where the _placement value has changed.
+// In he situation where the camera does not read any value the loop will break after the counter is up.
+            if(!_placement.equals("UNKNOWN") || _counter == 30000)
                 break;
         }
         return _placement;

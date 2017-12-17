@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
@@ -27,9 +26,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  *This is the left sided balancing stone from the drivers square perspective on the blue side
  *
  */
-@Autonomous(name = "AutonomousBlue1", group = "Autonomous Code Blue Side")
+@Autonomous(name = "AutonomousRed2", group = "Autonomous Code Red Side")
 //@Disabled
-public class AutonomousBlue1 extends LinearOpMode {
+public class AutonomousRed2 extends LinearOpMode {
 
     DcMotor rightMotorOutside;
     DcMotor leftMotorOutside;
@@ -76,18 +75,20 @@ public class AutonomousBlue1 extends LinearOpMode {
         if(_placement.equals("UNKNOWN"))
             _placement="CENTER";
 
-        long _leftStrafeValue = 1833; // Defaulting a value incase the vuforia doesn't work
-        if (_placement.equals("RIGHT"))
+        long _vuforiaDistane = 1500; // Defaulting a value incase the vuforia doesn't work
+        if (_placement.equals("LEFT"))
         {
-            _leftStrafeValue = 846;
+            //_vuforiaDistane = 1850;
+            _vuforiaDistane = 1720;
         }
         else if (_placement.equals("CENTER"))
         {
-            _leftStrafeValue = 1833;
+            _vuforiaDistane = 1395;
+
         }
-        else if (_placement.equals("LEFT"))
+        else if (_placement.equals("RIGHT"))
         {
-            _leftStrafeValue = 2632;
+            _vuforiaDistane = 1125;
         }
 
         //move sensor arm down
@@ -108,7 +109,7 @@ public class AutonomousBlue1 extends LinearOpMode {
         telemetry.addData("Blue ", jewelColorSensor.blue());
         telemetry.addData("Hue", hsvValues[0]);
 
-        if (jewelColorSensor.blue() > jewelColorSensor.red())
+        if (jewelColorSensor.red() > jewelColorSensor.blue())
         {
             StopDriving();
             sleep(1000);
@@ -126,7 +127,7 @@ public class AutonomousBlue1 extends LinearOpMode {
             colorServo.setPosition(0.0);
             sleep(3000);
         }
-        else if (jewelColorSensor.red() > jewelColorSensor.blue())
+        else if (jewelColorSensor.blue() > jewelColorSensor.red())
         {
             StopDriving();
             sleep(1000);
@@ -155,40 +156,50 @@ public class AutonomousBlue1 extends LinearOpMode {
         //move sensor arm down
         leftClawServo.setPosition(0.7);
         rightClawServo.setPosition(0.05);
-        sleep(1000);
-        Arm(0.5);
-        sleep(1000);
+        sleep(500);
+        Arm(0.75);
+        sleep(750);
         Arm(0.0);
         sleep(1);
         StopDriving();
         sleep(1);
 
+        //Go forward
         DriveForward(0.23);
-        sleep(1175);
+        sleep(125);
         StopDriving();
         sleep(100);
-        LeftTurn(0.25);
-        sleep(978);
+        RightTurn(0.20);
+        //sleep(1075);
+        sleep(975);
         StopDriving();
         sleep(100);
         DriveForward(0.25);
-        sleep(963);
+        //For Left
+        //sleep(1150);
+        //For Center
+        //sleep(1500);  //13.63V
+        //For Right
+        sleep(_vuforiaDistane);
         StopDriving();
         sleep(100);
-        NewStrafe(0.0115);
-        sleep(_leftStrafeValue);
+        RightTurn(0.25);
+        sleep(975);
         StopDriving();
         sleep(1);
-        blockMotorArm.setPower(-0.5);
-        sleep(250);
+        DriveBackward(0.25);
+        sleep(200);
+        StopDriving();
+        sleep(1);
+        Arm(-.5);
+        sleep(550);
         ArmStop();
-        sleep(300);
+        sleep(500);
         leftClawServo.setPosition(0.0);
         rightClawServo.setPosition(0.6);
-        sleep(2000);
         StopDriving();
         DriveForward(0.25);
-        sleep(500);
+        sleep(800);
         StopDriving();
         sleep(1);
         DriveBackward(0.25);
@@ -213,10 +224,10 @@ public class AutonomousBlue1 extends LinearOpMode {
     }
 
     private void NewStrafe(double power) {
-        leftMotorInside.setPower(0.25 + power);
-        leftMotorOutside.setPower(-0.25 + power);
-        rightMotorInside.setPower(-0.25 - power);
-        rightMotorOutside.setPower(0.25 - power);
+        leftMotorInside.setPower(-0.25 + power);
+        leftMotorOutside.setPower(0.25 + power);
+        rightMotorInside.setPower(0.25 - power);
+        rightMotorOutside.setPower(-0.25 - power);
     }
 
     public void LeftTurn(double power) {
@@ -226,6 +237,12 @@ public class AutonomousBlue1 extends LinearOpMode {
         rightMotorOutside.setPower(power);
     }
 
+    public void RightTurn(double power){
+        leftMotorInside.setPower(power);
+        leftMotorOutside.setPower(power);
+        rightMotorInside.setPower(-power);
+        rightMotorOutside.setPower(-power);
+    }
     public void StopDriving() {
         leftMotorInside.setPower(0);
         leftMotorOutside.setPower(0);

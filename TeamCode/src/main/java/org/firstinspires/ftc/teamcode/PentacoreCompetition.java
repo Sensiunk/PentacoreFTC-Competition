@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name = "Pentacore Competition")
-public class StrafingTestProgram extends LinearOpMode
+public class PentacoreCompetition extends LinearOpMode
 {
     DcMotor rightMotorOutside;
     DcMotor leftMotorOutside;
@@ -74,6 +74,12 @@ public class StrafingTestProgram extends LinearOpMode
                  strafe /= 3;
                  rotate /= 3;
             }
+            if (gamepad1.right_trigger > 0.25)
+            {
+                drive = 0;
+                strafe = 0;
+                rotate = 0;
+            }
 
             //Set the power for the wheels
             leftMotorInside.setPower(drive - strafe + rotate);
@@ -105,8 +111,8 @@ public class StrafingTestProgram extends LinearOpMode
             }
             if (gamepad2.x)
             {
-                rightClawServo.setPosition(0.05);
-                leftClawServo.setPosition(0.55);
+                rightClawServo.setPosition(0.1);
+                leftClawServo.setPosition(0.5);
             }
             if (gamepad2.left_trigger > 0.25)
             {
